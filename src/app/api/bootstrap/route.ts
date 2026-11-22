@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const s = read();
+  const s = await read();
   const pendingProjects = s.projects
     .filter((p) => p.status === "pending")
     .map((p) => ({ ...p, client: s.clients.find((c) => c.id === p.clientId) || null }))

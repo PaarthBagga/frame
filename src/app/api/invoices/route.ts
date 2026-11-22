@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const s = read();
+  const s = await read();
   const sorted = [...s.invoices].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
@@ -16,7 +16,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const s = read();
+  const s = await read();
 
   const items: LineItem[] = (body.lineItems || [])
     .filter((li: LineItem) => li.description?.trim())
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  write(s);
+  await write(s);
 
   return NextResponse.json(
     { invoice, emailSent, emailConfigured: emailConfigured(), emailError },

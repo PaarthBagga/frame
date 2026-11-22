@@ -26,7 +26,7 @@ export default async function InvoiceDetail({
 }) {
   const { id } = await params;
   const { created } = await searchParams;
-  const s = read();
+  const s = await read();
   const inv = s.invoices.find((i) => i.id === id);
   if (!inv) notFound();
 

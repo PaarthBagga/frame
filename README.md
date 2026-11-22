@@ -87,10 +87,12 @@ flowchart LR
     UI["Next.js pages<br/>dashboard, new invoice, pay page"] --> API[API routes]
     API --> AI["OpenAI<br/>Whisper + GPT"]
     API --> Mail["Resend<br/>email"]
-    API --> Store[("JSON file store<br/>.data/store.json")]
+    API --> Store[("Data store<br/>JSON file locally,<br/>Upstash Redis on Vercel")]
 ```
 
-There's no database to set up. Data lives in a JSON file that's seeded with sample invoices on first run. Delete `.data/store.json` to reset.
+There's no database to set up locally. Data lives in a JSON file that's seeded with sample invoices on first run. Delete `.data/store.json` to reset.
+
+On Vercel, each serverless function gets its own disk, so a file can't be shared between them. When Upstash Redis credentials are set (`KV_REST_API_URL` and `KV_REST_API_TOKEN`), the same store is kept in Redis instead, so every function sees the same data.
 
 ---
 

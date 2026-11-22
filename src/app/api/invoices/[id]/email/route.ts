@@ -10,7 +10,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
   const body = await req.json().catch(() => ({}));
   const reminder = !!body.reminder;
 
-  const s = read();
+  const s = await read();
   const inv = s.invoices.find((i) => i.id === id);
   if (!inv) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     inv.sentAt = inv.sentAt || now;
     inv.events.push({ type: "sent", at: now, note: `Emailed to ${inv.client.email}` });
   }
-  write(s);
+  await write(s);
 
   return NextResponse.json({ ok: true, id: result.id, invoice: inv });
 }

@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
-  const s = read();
+  const s = await read();
   const inv = s.invoices.find((i) => i.id === id);
   if (!inv) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json({ invoice: inv });
@@ -16,7 +16,7 @@ export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string
 export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   const { id } = await ctx.params;
   const body = await req.json();
-  const s = read();
+  const s = await read();
   const inv = s.invoices.find((i) => i.id === id);
   if (!inv) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -39,6 +39,6 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
     inv.events = inv.events.filter((e: InvoiceEvent) => e.type !== "paid");
   }
 
-  write(s);
+  await write(s);
   return NextResponse.json({ invoice: inv });
 }

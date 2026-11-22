@@ -203,23 +203,49 @@ function normalize(s: Store): Store {
   return s;
 }
 
-function ensure(): Store {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  if (!fs.existsSync(DATA_FILE)) {
+// Where the store lives:
+// - Redis (Upstash), when its REST URL and token are set. Used on Vercel,
+//   where every serverless function has its own disk, so a file can't be shared.
+// - Otherwise a JSON file in .data/, for running locally with no setup.
+const REDIS_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const REDIS_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+const REDIS_KEY = "frame:store";
+
+async function redis(command: string[]): Promise<string | null> {
+  const res = await fetch(REDIS_URL!, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${REDIS_TOKEN}` },
+    body: JSON.stringify(command),
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`Redis ${command[0]} failed: ${res.status}`);
+  const data = (await res.json()) as { result: string | null };
+  return data.result;
+}
+
+async function load(): Promise<string | null> {
+  if (REDIS_URL && REDIS_TOKEN) return redis(["GET", REDIS_KEY]);
+  return fs.existsSync(DATA_FILE) ? fs.readFileSync(DATA_FILE, "utf8") : null;
+}
+
+export async function read(): Promise<Store> {
+  const raw = await load();
+  if (raw === null) {
     const s = seed();
-    fs.writeFileSync(DATA_FILE, JSON.stringify(s, null, 2));
+    await write(s);
     return s;
   }
-  return normalize(JSON.parse(fs.readFileSync(DATA_FILE, "utf8")) as Store);
+  return normalize(JSON.parse(raw) as Store);
 }
 
-export function read(): Store {
-  return ensure();
-}
-
-export function write(store: Store): void {
+export async function write(store: Store): Promise<void> {
+  const json = JSON.stringify(store, null, 2);
+  if (REDIS_URL && REDIS_TOKEN) {
+    await redis(["SET", REDIS_KEY, json]);
+    return;
+  }
   if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-  fs.writeFileSync(DATA_FILE, JSON.stringify(store, null, 2));
+  fs.writeFileSync(DATA_FILE, json);
 }
 
 export function lineItemsTotal(items: LineItem[]): number {

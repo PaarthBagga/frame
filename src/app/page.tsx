@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { read, lineItemsTotal, amountDue, clientName } from "@/lib/db";
+import type { Store } from "@/lib/types";
 import { money, shortDate, relTime } from "@/lib/format";
 import { AppHeader } from "@/components/AppHeader";
 import { StatusPill } from "@/components/StatusPill";
 
 export const dynamic = "force-dynamic";
 
-function avgDaysToPay(invoices: ReturnType<typeof read>["invoices"]): number | null {
+function avgDaysToPay(invoices: Store["invoices"]): number | null {
   const paid = invoices.filter((i) => i.paidAt && i.sentAt);
   if (paid.length === 0) return null;
   const days =
@@ -16,8 +17,8 @@ function avgDaysToPay(invoices: ReturnType<typeof read>["invoices"]): number | n
   return Math.max(0, Math.round(days * 10) / 10);
 }
 
-export default function Dashboard() {
-  const s = read();
+export default async function Dashboard() {
+  const s = await read();
   const invoices = [...s.invoices].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );

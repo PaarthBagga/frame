@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const s = read();
+  const s = await read();
   const sorted = [...s.projects].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
@@ -19,7 +19,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const s = read();
+  const s = await read();
 
   const items: LineItem[] = (body.workItems || [])
     .filter((li: LineItem) => li.description?.trim())
@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
   };
 
   s.projects.push(project);
-  write(s);
+  await write(s);
 
   return NextResponse.json({ project, client }, { status: 201 });
 }

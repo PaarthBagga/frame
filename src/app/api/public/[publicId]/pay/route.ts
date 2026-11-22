@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export async function POST(_req: NextRequest, ctx: { params: Promise<{ publicId: string }> }) {
   const { publicId } = await ctx.params;
-  const s = read();
+  const s = await read();
   const inv = s.invoices.find((i) => i.publicId === publicId);
   if (!inv) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -15,7 +15,7 @@ export async function POST(_req: NextRequest, ctx: { params: Promise<{ publicId:
     inv.status = "paid";
     inv.paidAt = now;
     inv.events.push({ type: "paid", at: now, note: "Paid online via card" });
-    write(s);
+    await write(s);
   }
 
   return NextResponse.json({ invoice: inv });

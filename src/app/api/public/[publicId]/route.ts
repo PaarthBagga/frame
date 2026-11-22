@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(_req: NextRequest, ctx: { params: Promise<{ publicId: string }> }) {
   const { publicId } = await ctx.params;
-  const s = read();
+  const s = await read();
   const inv = s.invoices.find((i) => i.publicId === publicId);
   if (!inv) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
@@ -14,7 +14,7 @@ export async function GET(_req: NextRequest, ctx: { params: Promise<{ publicId: 
   const last = inv.events[inv.events.length - 1];
   if (inv.status !== "paid" && (!last || last.type !== "viewed")) {
     inv.events.push({ type: "viewed", at: new Date().toISOString() });
-    write(s);
+    await write(s);
   }
 
   return NextResponse.json({
