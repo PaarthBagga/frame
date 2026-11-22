@@ -99,7 +99,9 @@ export async function POST(req: NextRequest) {
     });
     if (result.ok) {
       emailSent = true;
-      invoice.events.push({ type: "sent", at: new Date().toISOString(), note: `Emailed to ${client.email}` });
+      // Add the email detail to the existing "sent" event instead of logging it twice.
+      const sent = invoice.events.find((e) => e.type === "sent");
+      if (sent) sent.note = `Emailed to ${client.email}`;
     } else {
       emailError = result.error;
     }

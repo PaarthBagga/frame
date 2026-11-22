@@ -9,7 +9,11 @@ export function money(n: number): string {
 
 export function shortDate(iso?: string): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  // A plain "YYYY-MM-DD" is a calendar day, not a moment in time. Parse it as
+  // local so it doesn't show a day early west of UTC.
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+  const date = m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : new Date(iso);
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
 export function relTime(iso?: string): string {
