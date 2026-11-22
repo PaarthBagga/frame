@@ -1,10 +1,16 @@
 // Records a full walkthrough of the app as a video.
 //
-//   1. Start the app in demo mode:   DEMO_MODE=1 npm run dev
+//   1. Start the app in demo mode:   npm run build && DEMO_MODE=1 npm start
+//      (a production build, so the Next.js dev button isn't in the video;
+//       delete .data/store.json first to start from the sample data)
 //   2. In another terminal:          npm run demo
 //
 // The video lands in demo/. Chrome gets a fake microphone, so the voice
 // dictation flow runs for real end to end (demo mode supplies the words).
+//
+// Convert it for the README (needs ffmpeg):
+//   ffmpeg -y -i demo/demo.webm -vf "setpts=PTS/1.25,fps=12,scale=360:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=96[p];[b][p]paletteuse" docs/demo.gif
+//   ffmpeg -y -i demo/demo.webm -vf "setpts=PTS/1.25,scale=430:-2" -c:v libx264 -pix_fmt yuv420p docs/demo.mp4
 
 import { chromium } from "playwright";
 import { mkdirSync, readdirSync, renameSync } from "node:fs";

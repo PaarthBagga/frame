@@ -6,7 +6,7 @@
   <img src="docs/demo.gif" alt="Frame demo: dictating an invoice by voice, sending it, and the client paying" width="360">
 </p>
 
-<p align="center"><a href="docs/demo.mp4">▶️ Watch the full-quality video</a></p>
+<p align="center"><a href="https://youtube.com/shorts/xXgYAstohT8">▶️ Watch the full-quality video on YouTube</a></p>
 
 <p align="center"><i>Built at the Cursor Hackathon.</i></p>
 
@@ -26,7 +26,7 @@ Wedding photographers finish a shoot exhausted, drive home, and leave invoicing 
 - 📦 **Saved packages**: *Wedding Full Day*, *Engagement*, *Album Add-on* and others fill in the line items in one tap.
 - 🔗 **Secure Pay link**: Every invoice gets a link the client can open on their phone and pay by card.
 - ✉️ **Real email**: Invoices and reminders are sent through Resend as a branded HTML email.
-- 💰 **Deposits**: Ask for 25% or 50% up front.
+- 💰 **Deposits**: Options to ask for 25% or 50% up front.
 - 📊 **Dashboard and activity**: See what's outstanding, what's been collected this month, how long clients take to pay, and when each invoice was sent, reminded, or paid.
 - 🗂️ **Client and project intake**, also by voice, so jobs can be logged before they're ready to invoice.
 
@@ -122,27 +122,78 @@ In Resend's test mode you can only email your own address. Verify a domain to em
 
 ---
 
-## 🎬 Record the Demo Yourself
+## 🎬 Automated Demo
 
-The GIF above is generated, not screen-recorded by hand. A Playwright script drives the app like a user would, with a fake microphone feeding the dictation flow, and records it:
+The GIF above isn't screen-recorded by hand. A Playwright script drives the app like a real user, with a fake microphone feeding the voice dictation, and records the whole thing.
 
 ```bash
-DEMO_MODE=1 npm run dev          # terminal 1
-npm run demo                     # terminal 2 -> demo/demo.webm
-
-# convert to the README GIF and MP4 (needs ffmpeg)
-ffmpeg -i demo/demo.webm -vf "setpts=PTS/1.25,fps=12,scale=360:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=96[p];[b][p]paletteuse" docs/demo.gif
-ffmpeg -i demo/demo.webm -vf "setpts=PTS/1.25,scale=430:-2" -c:v libx264 -pix_fmt yuv420p docs/demo.mp4
+npm run build && DEMO_MODE=1 npm start   # terminal 1
+npm run demo                             # terminal 2 -> demo/demo.webm
 ```
 
-Rerun it whenever the UI changes and the demo stays current.
+The ffmpeg commands that turn the recording into the GIF and MP4 are at the top of [`scripts/demo.mjs`](scripts/demo.mjs).
+
+---
+
+## 🧠 What I Learned
+
+### ⭐ The most important thing: I'm more capable than I thought
+- I went into the hackathon not knowing a lot
+- I held my own and contributed real parts of the app, including the idea for voice dictation with Whisper and OpenAI
+- **In the future:** I'll take on projects that feel out of reach, because I can figure things out as I go
+
+### 🛠️ Everything else
+
+**🎙️ How to design a voice flow**
+- One short question per field, not one long recording, makes dictation reliable
+- **In the future:** I can build voice input for any form
+
+**🤖 How to use an LLM as a parser**
+- GPT with strict rules and JSON output turns messy speech into clean data
+- **In the future:** I can add AI to apps without it making things up
+
+**📱 How browsers record audio differently**
+- Chrome and iPhone use different audio formats, so the app detects which one it gets
+- **In the future:** I'll test on real devices, not just my laptop
+
+**🎯 How to build from a real problem**
+- Every feature aims at one moment: sending the invoice before leaving the venue
+- **In the future:** I'll start every project by finding that moment
+
+**✨ How to design for as little friction as possible**
+- **Less typing:** talk instead of type, and saved packages fill in line items with one tap
+- **Fewer buttons:** dictate, review, send, done
+- **Fast:** the app listens instead of making you fill in a form
+- **Reliable:** OpenAI cleans up messy speech so the fields come out right
+- **Rewarding:** confetti when a client pays, so using it feels good and people come back
+- **In the future:** I'll judge every feature by asking: *does this make it simpler, faster or more satisfying?*
+
+**🔒 How small details build trust**
+- Time zones, unguessable pay links, no double payments
+- **In the future:** I'll check for these in anything involving money
+
+**⏱️ How to scope under time pressure**
+- We faked payments and the database to focus on the core idea
+- **In the future:** I can apply this at any hackathon or MVP
+
+**🎬 How to create an automated demo with Playwright and ffmpeg**
+- A script drives the app with a fake microphone and records it
+- **In the future:** I can script demo videos for any project instead of screen-recording
+
+**🧪 How to build a demo mode**
+- The app runs with no API keys and no costs
+- **In the future:** anyone can try my projects for free
+
+**🚀 How development differs from production**
+- Dev-only buttons and read-only servers caught me out
+- **In the future:** I'll plan for deployment from the start
 
 ---
 
 ## 📝 Notes
 
 - **Payments are simulated.** The checkout is a demo screen and no card is ever charged. Connecting Stripe is the next step.
-- **Single user.** There are no accounts. It's built around one photographer.
+- **Single user.** There are no accounts. It's built around one photographer making it extra lightweight
 
 ---
 
@@ -157,4 +208,4 @@ Rerun it whenever the UI changes and the demo stays current.
 
 ## 👥 Team
 
-I built this in collaboration with three others at the Cursor Hackathon. The code is co-owned by all four of us.
+I built this in collaboration with four others at the Cursor Hackathon. The code is co-owned by all five of us.
