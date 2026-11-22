@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { isDemo, demoParse, demoDelay } from "@/lib/demo";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -7,6 +8,13 @@ export const dynamic = "force-dynamic";
 type Field = { key: string; type: string; label: string; optional?: boolean };
 
 export async function POST(req: NextRequest) {
+  if (isDemo()) {
+    const body = await req.json();
+    const keys = ((body.fields || []) as Field[]).map((f) => f.key);
+    await demoDelay(900);
+    return NextResponse.json({ values: demoParse(keys, body.transcripts || {}) });
+  }
+
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json({ error: "OPENAI_API_KEY is not set.", configured: false }, { status: 200 });
   }

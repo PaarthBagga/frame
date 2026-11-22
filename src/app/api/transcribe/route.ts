@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI, { toFile } from "openai";
+import { isDemo, demoTranscript, demoDelay } from "@/lib/demo";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  if (isDemo()) {
+    const form = await req.formData();
+    await demoDelay();
+    return NextResponse.json({ text: demoTranscript(String(form.get("step") || "")) });
+  }
+
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json({ error: "OPENAI_API_KEY is not set.", configured: false }, { status: 200 });
   }

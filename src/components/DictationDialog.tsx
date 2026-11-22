@@ -151,9 +151,10 @@ export function DictationDialog({
     });
   }
 
-  async function transcribe(blob: Blob): Promise<string> {
+  async function transcribe(blob: Blob, step: string): Promise<string> {
     const fd = new FormData();
     fd.append("audio", blob, "speech.webm");
+    fd.append("step", step);
     const res = await fetch("/api/transcribe", { method: "POST", body: fd });
     const d = await res.json().catch(() => ({}));
     if (d.configured === false) {
@@ -178,9 +179,9 @@ export function DictationDialog({
     setStatus("transcribing");
     try {
       const blob = await stopRecorder();
-      let text = "";
-      if (blob && blob.size > 0) text = await transcribe(blob);
       const key = steps[stepIndexRef.current].key;
+      let text = "";
+      if (blob && blob.size > 0) text = await transcribe(blob, key);
       setTranscripts((prev) => ({ ...prev, [key]: text }));
       await advanceTo(stepIndexRef.current + 1);
     } catch (e) {

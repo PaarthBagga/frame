@@ -2,9 +2,10 @@ import { Resend } from "resend";
 import type { Invoice, Settings } from "./types";
 import { money } from "./format";
 import { amountDue, lineItemsTotal } from "./db";
+import { isDemo } from "./demo";
 
 export function emailConfigured(): boolean {
-  return !!process.env.RESEND_API_KEY;
+  return isDemo() || !!process.env.RESEND_API_KEY;
 }
 
 export function baseUrlFromRequest(req: Request): string {
@@ -101,6 +102,12 @@ export async function sendInvoiceEmail(opts: {
   reminder?: boolean;
 }): Promise<SendResult> {
   const { invoice, settings, baseUrl, reminder = false } = opts;
+
+  // Demo mode: pretend the email went out.
+  if (isDemo()) {
+    if (!invoice.client.email) return { ok: false, configured: true, error: "This client has no email address." };
+    return { ok: true, id: "demo" };
+  }
 
   if (!process.env.RESEND_API_KEY) {
     return { ok: false, configured: false, error: "RESEND_API_KEY is not set." };
