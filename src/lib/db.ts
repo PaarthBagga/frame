@@ -248,6 +248,10 @@ export async function write(store: Store): Promise<void> {
   fs.writeFileSync(DATA_FILE, json);
 }
 
+export async function resetStore(): Promise<void> {
+  await write(seed());
+}
+
 export function lineItemsTotal(items: LineItem[]): number {
   return items.reduce((sum, li) => sum + li.qty * li.unitPrice, 0);
 }
