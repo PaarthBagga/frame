@@ -43,3 +43,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# demo recordings (the README uses docs/demo.gif and docs/demo.mp4)
+/demo/
