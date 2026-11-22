@@ -6,7 +6,12 @@
   <img src="docs/demo.gif" alt="Frame demo: dictating an invoice by voice, sending it, and the client paying" width="360">
 </p>
 
-<p align="center"><a href="https://youtube.com/shorts/xXgYAstohT8">▶️ Watch the full-quality video on YouTube</a></p>
+<p align="center">
+  <a href="https://frame-blush-ten.vercel.app/"><img src="https://img.shields.io/badge/Live_Demo-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo"></a>
+  <a href="https://youtube.com/shorts/xXgYAstohT8"><img src="https://img.shields.io/badge/Watch_on_YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="Watch on YouTube"></a>
+</p>
+
+<p align="center"><sub>The live demo runs in demo mode: dictation uses sample answers, emails aren't sent, and payments are simulated.</sub></p>
 
 <p align="center"><i>Built at the Cursor Hackathon.</i></p>
 
