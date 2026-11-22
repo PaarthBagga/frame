@@ -11,7 +11,7 @@
   <a href="https://youtube.com/shorts/xXgYAstohT8"><img src="https://img.shields.io/badge/Watch_on_YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white" alt="Watch on YouTube"></a>
 </p>
 
-<p align="center"><sub>The live demo runs in demo mode: dictation uses sample answers, emails aren't sent, and payments are simulated.</sub></p>
+<p align="center"><sub>The live demo runs in demo mode: dictation uses sample answers, emails aren't sent, and payments are simulated. The data resets to the sample invoices every night.</sub></p>
 
 <p align="center"><i>Built at the Cursor Hackathon.</i></p>
 
@@ -98,6 +98,8 @@ flowchart LR
 There's no database to set up locally. Data lives in a JSON file that's seeded with sample invoices on first run. Delete `.data/store.json` to reset.
 
 On Vercel, each serverless function gets its own disk, so a file can't be shared between them. When Upstash Redis credentials are set (`KV_REST_API_URL` and `KV_REST_API_TOKEN`), the same store is kept in Redis instead, so every function sees the same data.
+
+A Vercel cron job (`vercel.json`) calls `/api/reset` every night at 4 AM Toronto time to put the live demo back to its sample data. The route requires the `CRON_SECRET` and only runs when `DEMO_MODE=1`, so a real deployment can never be wiped.
 
 ---
 
